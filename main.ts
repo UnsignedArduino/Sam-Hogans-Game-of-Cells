@@ -194,6 +194,12 @@ sprites.onDestroyed(SpriteKind.Cell, function (sprite) {
         info.changeScoreBy(1)
     }
 })
+function cloneCell (sprite: Sprite, col: number, row: number) {
+    ClonedCell = sprites.create(sprite.image, SpriteKind.Cell)
+    sprites.setDataNumber(ClonedCell, "CellType", sprites.readDataNumber(sprite, "CellType"))
+    sprites.setDataNumber(ClonedCell, "CellTypeVariation", sprites.readDataNumber(sprite, "CellType"))
+    grid.place(ClonedCell, tiles.getTileLocation(col, row))
+}
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     Editable = false
     Cursor.destroy()
@@ -226,8 +232,10 @@ function rotateCell (sprite: Sprite, dir: boolean) {
     }
     sprite.setImage(CellImages[sprites.readDataNumber(sprite, "CellType")][sprites.readDataNumber(sprite, "CellTypeVariation")])
 }
+let Location: Sprite[] = []
 let CellTypeVariation = 0
 let CellType = 0
+let ClonedCell: Sprite = null
 let CellsInPath: Sprite[] = []
 let DirectionMoved = 0
 let Cell: Sprite = null
@@ -518,14 +526,77 @@ game.onUpdateInterval(500, function () {
             // 
             // 
             // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
             // right
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
             // 
             // 
             // down
             // 
             // 
             // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
             // left
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
             // 
             // 
             // 
@@ -563,13 +634,49 @@ game.onUpdateInterval(500, function () {
                 }
             } else if (CellType == 4) {
                 if (CellTypeVariation == 0) {
-                	
+                    for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Bottom, 1)) {
+                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Top, 1)
+                        if (Location.length > 0) {
+                            moveCell(Location[0], 0, -1)
+                        }
+                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Top, 1)
+                        if (Location.length == 0) {
+                            cloneCell(CellInTile, grid.spriteCol(Cell), grid.spriteRow(Cell) - 1)
+                        }
+                    }
                 } else if (CellTypeVariation == 1) {
-                	
+                    for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Left, 1)) {
+                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Right, 1)
+                        if (Location.length > 0) {
+                            moveCell(Location[0], 1, 0)
+                        }
+                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Right, 1)
+                        if (Location.length == 0) {
+                            cloneCell(CellInTile, grid.spriteCol(Cell) + 1, grid.spriteRow(Cell))
+                        }
+                    }
                 } else if (CellTypeVariation == 2) {
-                	
+                    for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Top, 1)) {
+                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Bottom, 1)
+                        if (Location.length > 0) {
+                            moveCell(Location[0], 0, 1)
+                        }
+                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Bottom, 1)
+                        if (Location.length == 0) {
+                            cloneCell(CellInTile, grid.spriteCol(Cell), grid.spriteRow(Cell) + 1)
+                        }
+                    }
                 } else {
-                	
+                    for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Right, 1)) {
+                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Left, 1)
+                        if (Location.length > 0) {
+                            moveCell(Location[0], -1, 0)
+                        }
+                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Left, 1)
+                        if (Location.length == 0) {
+                            cloneCell(CellInTile, grid.spriteCol(Cell) - 1, grid.spriteRow(Cell))
+                        }
+                    }
                 }
             } else if (CellType == 5) {
             	
