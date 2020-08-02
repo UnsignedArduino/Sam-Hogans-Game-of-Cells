@@ -200,6 +200,32 @@ controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     CursorSelectedCellImage.destroy()
     console.log("Editing is now disabled! The simulation will start shortly... ")
 })
+function rotateCell (sprite: Sprite, dir: boolean) {
+    // if rotate (true)
+    // 
+    // rotate right by changing the variation type (because the images are in sequential order rotating by 90 degrees right)
+    // 
+    // else rotate left
+    // 
+    // rotate left by changing the variation type (because the images are in sequential order rotating by 90 degrees right)
+    // 
+    // 
+    // 
+    // 
+    // update the image
+    if (dir) {
+        sprites.changeDataNumberBy(sprite, "CellTypeVariation", 1)
+        if (sprites.readDataNumber(sprite, "CellTypeVariation") == CellImages[sprites.readDataNumber(sprite, "CellType")].length) {
+            sprites.setDataNumber(sprite, "CellTypeVariation", 0)
+        }
+    } else {
+        sprites.changeDataNumberBy(sprite, "CellTypeVariation", -1)
+        if (sprites.readDataNumber(sprite, "CellTypeVariation") == -1) {
+            sprites.setDataNumber(sprite, "CellTypeVariation", CellImages[sprites.readDataNumber(sprite, "CellType")].length - 1)
+        }
+    }
+    sprite.setImage(CellImages[sprites.readDataNumber(sprite, "CellType")][sprites.readDataNumber(sprite, "CellTypeVariation")])
+}
 let CellTypeVariation = 0
 let CellType = 0
 let CellsInPath: Sprite[] = []
@@ -458,16 +484,35 @@ game.onUpdateInterval(500, function () {
             // rotator
             // 
             // 
-            // 90 deg right
             // 
             // 
-            // 90 deg left
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
             // 
             // 
             // 
             // 
             // generator
-            // 
             // 
             // up
             // 
@@ -504,10 +549,17 @@ game.onUpdateInterval(500, function () {
             } else if (CellType == 2) {
             	
             } else if (CellType == 3) {
-                if (CellTypeVariation == 0) {
-                	
-                } else {
-                	
+                for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Top, 1)) {
+                    rotateCell(CellInTile, CellTypeVariation == 0)
+                }
+                for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Right, 1)) {
+                    rotateCell(CellInTile, CellTypeVariation == 0)
+                }
+                for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Bottom, 1)) {
+                    rotateCell(CellInTile, CellTypeVariation == 0)
+                }
+                for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(Cell), CollisionDirection.Left, 1)) {
+                    rotateCell(CellInTile, CellTypeVariation == 0)
                 }
             } else if (CellType == 4) {
                 if (CellTypeVariation == 0) {
@@ -527,6 +579,6 @@ game.onUpdateInterval(500, function () {
         }
         Generation += 1
         NumberOfCellsOnGrid = grid.allSprites().length
-        console.log("Finished generation " + Generation + " with " + NumberOfCellsOnGrid + " cells!")
+        console.log("Finished generation " + Generation + " with " + NumberOfCellsOnGrid + " cells on the grid!")
     }
 })
