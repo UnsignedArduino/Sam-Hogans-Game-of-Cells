@@ -179,7 +179,7 @@ function moveCell (sprite: Sprite, col: number, row: number) {
             }
         } else if (sprites.readDataNumber(CellsInPath[0], "CellType") == 5) {
             return
-        } else if (sprites.readDataNumber(CellsInPath[0], "CellType") == 6) {
+        } else if (sprites.readDataNumber(CellsInPath[0], "CellType") == 6 && !(sprites.readDataNumber(sprite, "CellType") == 6)) {
             CellsInPath[0].destroy(effects.spray, 100)
             sprite.destroy()
             return

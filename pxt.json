@@ -1,6 +1,5 @@
 {
-    "name": "Sam Hogan's Game of Cells v0.3 BETA",
-    "version": "1.0.0",
+    "name": "Sam Hogan's Game of Cells v0.4.1 BETA",
     "description": "",
     "dependencies": {
         "device": "*",
