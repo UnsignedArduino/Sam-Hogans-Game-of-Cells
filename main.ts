@@ -1,3 +1,6 @@
+namespace SpriteKind {
+    export const Cell = SpriteKind.create()
+}
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Editable) {
         SelectedCellImage += 1
@@ -18,7 +21,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Editable) {
         if (!(SelectedCellImageType == 7)) {
-            Cell = sprites.create(CellImages[SelectedCellImageType][SelectedCellImage], SpriteKind.Player)
+            Cell = sprites.create(CellImages[SelectedCellImageType][SelectedCellImage], SpriteKind.Cell)
             Cell.setPosition(Cursor.x, Cursor.y)
             sprites.setDataNumber(Cell, "CellType", SelectedCellImageType)
             sprites.setDataNumber(Cell, "CellTypeVariation", SelectedCellImage)
@@ -44,12 +47,18 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         console.log("Editing is not enabled, probably because you started the simulation by pressing [Menu]! Restart to clear the board and enable editing.")
     }
 })
+sprites.onDestroyed(SpriteKind.Cell, function (sprite) {
+    info.changeScoreBy(1)
+})
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     Editable = false
-    Cursor.setFlag(SpriteFlag.Invisible, true)
-    CursorSelectedCellImage.setFlag(SpriteFlag.Invisible, true)
+    Cursor.destroy()
+    CursorSelectedCellImage.destroy()
     console.log("Editing is now disabled! The simulation will start shortly... ")
 })
+let CellsInPath: Sprite[] = []
+let CellTypeVariation = 0
+let CellType = 0
 let DirectionMoved = 0
 let Cell: Sprite = null
 let Editable = false
@@ -269,9 +278,47 @@ game.onUpdate(function () {
     CursorSelectedCellImage.setPosition(Cursor.x, Cursor.y)
 })
 game.onUpdateInterval(500, function () {
-    for (let Cell of grid.allSprites()) {
-    	
+    if (!(Editable)) {
+        for (let Cell of grid.allSprites()) {
+            CellType = sprites.readDataNumber(Cell, "CellType")
+            CellTypeVariation = sprites.readDataNumber(Cell, "CellTypeVariation")
+            if (CellType == 0) {
+                console.log("Cell type is mover")
+                if (CellTypeVariation == 0) {
+                    CellsInPath = grid.getSprites(tiles.getTileLocation(grid.spriteCol(Cell), grid.spriteRow(Cell) - 1))
+                    if (CellsInPath.length == 0) {
+                        grid.move(Cell, 0, -1)
+                    } else {
+                        if (sprites.readDataNumber(CellsInPath[0], "CellType") == 5) {
+                        	
+                        } else if (sprites.readDataNumber(CellsInPath[0], "CellType") == 6) {
+                            CellsInPath[0].destroy(effects.spray, 100)
+                            Cell.destroy()
+                        }
+                    }
+                } else if (CellTypeVariation == 1) {
+                    grid.move(Cell, 1, 0)
+                } else if (CellTypeVariation == 2) {
+                    grid.move(Cell, 0, 1)
+                } else {
+                    grid.move(Cell, -1, 0)
+                }
+            } else if (CellType == 1) {
+                console.log("Cell type is pushable")
+            } else if (CellType == 2) {
+                console.log("Cell type is slider")
+            } else if (CellType == 3) {
+                console.log("Cell type is rotator")
+            } else if (CellType == 4) {
+                console.log("Cell type is generator")
+            } else if (CellType == 5) {
+                console.log("Cell type is immobile")
+            } else {
+                console.log("Cell type is enemy")
+            }
+        }
+        Generation += 1
+        NumberOfCellsOnGrid = grid.allSprites().length
+        console.log("Finished generation " + Generation + " with " + NumberOfCellsOnGrid + " cells!")
     }
-    Generation += 1
-    console.log("Finished generation " + Generation + "!")
 })
