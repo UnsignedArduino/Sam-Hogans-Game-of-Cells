@@ -205,6 +205,7 @@ controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     Cursor.destroy()
     CursorSelectedCellImage.destroy()
     console.log("Editing is now disabled! The simulation will start shortly... ")
+    Paused = !(Paused)
 })
 function rotateCell (sprite: Sprite, dir: boolean) {
     // if rotate (true)
@@ -239,6 +240,7 @@ let ClonedCell: Sprite = null
 let CellsInPath: Sprite[] = []
 let DirectionMoved = 0
 let Cell: Sprite = null
+let Paused = false
 let Editable = false
 let NumberOfCellsOnGrid = 0
 let SelectedCellImageType = 0
@@ -449,6 +451,7 @@ SelectedCellImageType = 0
 NumberOfCellsOnGrid = 0
 let Generation = 0
 Editable = true
+Paused = true
 CursorSelectedCellImage.setImage(CellImages[SelectedCellImageType][SelectedCellImage])
 console.log("Welcome to Sam Hogan's Game of Cells (Unofficial) Sandbox console!")
 console.log("Written by Unsigned_Arduino on the MakeCode forums. (forum.makecode.com)")
@@ -457,7 +460,7 @@ game.onUpdate(function () {
 })
 // Use control.heapSnapshot() if needed (prints to JS console in dev tools in browser)
 game.onUpdateInterval(500, function () {
-    if (!(Editable)) {
+    if (!(Editable) && !(Paused)) {
         for (let Cell of grid.allSprites()) {
             CellType = sprites.readDataNumber(Cell, "CellType")
             CellTypeVariation = sprites.readDataNumber(Cell, "CellTypeVariation")
