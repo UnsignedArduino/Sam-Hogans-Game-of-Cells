@@ -427,8 +427,69 @@ game.onUpdateInterval(500, function () {
         for (let Cell of grid.allSprites()) {
             CellType = sprites.readDataNumber(Cell, "CellType")
             CellTypeVariation = sprites.readDataNumber(Cell, "CellTypeVariation")
+            // mover
+            // up
+            // 
+            // 
+            // 
+            // 
+            // right
+            // 
+            // 
+            // 
+            // 
+            // down
+            // 
+            // 
+            // 
+            // left
+            // 
+            // 
+            // 
+            // 
+            // 
+            // pushable
+            // 
+            // 
+            // 
+            // slider
+            // 
+            // 
+            // rotator
+            // 
+            // 
+            // 90 deg right
+            // 
+            // 
+            // 90 deg left
+            // 
+            // 
+            // 
+            // 
+            // generator
+            // 
+            // 
+            // up
+            // 
+            // 
+            // 
+            // right
+            // 
+            // 
+            // down
+            // 
+            // 
+            // 
+            // left
+            // 
+            // 
+            // 
+            // 
+            // immobile
+            // 
+            // 
+            // enemy
             if (CellType == 0) {
-                console.log("Cell type is mover")
                 if (CellTypeVariation == 0) {
                     moveCell(Cell, 0, -1)
                 } else if (CellTypeVariation == 1) {
@@ -439,17 +500,29 @@ game.onUpdateInterval(500, function () {
                     moveCell(Cell, -1, 0)
                 }
             } else if (CellType == 1) {
-                console.log("Cell type is pushable")
+            	
             } else if (CellType == 2) {
-                console.log("Cell type is slider")
+            	
             } else if (CellType == 3) {
-                console.log("Cell type is rotator")
+                if (CellTypeVariation == 0) {
+                	
+                } else {
+                	
+                }
             } else if (CellType == 4) {
-                console.log("Cell type is generator")
+                if (CellTypeVariation == 0) {
+                	
+                } else if (CellTypeVariation == 1) {
+                	
+                } else if (CellTypeVariation == 2) {
+                	
+                } else {
+                	
+                }
             } else if (CellType == 5) {
-                console.log("Cell type is immobile")
+            	
             } else {
-                console.log("Cell type is enemy")
+            	
             }
         }
         Generation += 1
