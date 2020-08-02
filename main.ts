@@ -47,8 +47,152 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         console.log("Editing is not enabled, probably because you started the simulation by pressing [Menu]! Restart to clear the board and enable editing.")
     }
 })
+function moveCell (sprite: Sprite, col: number, row: number) {
+    CellsInPath = grid.getSprites(tiles.getTileLocation(grid.spriteCol(sprite) + col, grid.spriteRow(sprite) + row))
+    // Move cell if nothing in way, else run through each check than move if can
+    if (CellsInPath.length == 0) {
+        grid.move(sprite, col, row)
+    } else {
+        // If type is slider
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // elif type is immobile
+        // 
+        // 
+        // 
+        // 
+        // elif type is enemy
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // 
+        // move cells in front and self if we have not returned
+        if (sprites.readDataNumber(CellsInPath[0], "CellType") == 2) {
+            // If slider variation goes left right
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // else the slider must go up and down
+            if (sprites.readDataNumber(CellsInPath[0], "CellTypeVariation") == 0) {
+                // If row == -1 (up)
+                // 
+                // 
+                // elif row == 1 (down)
+                // 
+                // 
+                // 
+                // elif col == -1 (left)
+                // 
+                // 
+                // 
+                // else col must be 1
+                if (row < 0) {
+                    return
+                } else if (row > 0) {
+                    return
+                } else if (col < 0) {
+                	
+                } else {
+                	
+                }
+            } else {
+                // If row == -1 (up)
+                // 
+                // 
+                // elif row == 1 (down)
+                // 
+                // 
+                // 
+                // elif col == -1 (left)
+                // 
+                // 
+                // 
+                // else col must be 1
+                if (row < 0) {
+                	
+                } else if (row > 0) {
+                	
+                } else if (col < 0) {
+                    return
+                } else {
+                    return
+                }
+            }
+        } else if (sprites.readDataNumber(CellsInPath[0], "CellType") == 5) {
+            return
+        } else if (sprites.readDataNumber(CellsInPath[0], "CellType") == 6) {
+            CellsInPath[0].destroy(effects.spray, 100)
+            sprite.destroy()
+            return
+        }
+        moveCell(CellsInPath[0], col, row)
+        moveCell(sprite, col, row)
+    }
+    return
+}
 sprites.onDestroyed(SpriteKind.Cell, function (sprite) {
-    info.changeScoreBy(1)
+    if (!(Editable)) {
+        info.changeScoreBy(1)
+    }
 })
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     Editable = false
@@ -56,9 +200,9 @@ controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     CursorSelectedCellImage.destroy()
     console.log("Editing is now disabled! The simulation will start shortly... ")
 })
-let CellsInPath: Sprite[] = []
 let CellTypeVariation = 0
 let CellType = 0
+let CellsInPath: Sprite[] = []
 let DirectionMoved = 0
 let Cell: Sprite = null
 let Editable = false
@@ -277,6 +421,7 @@ console.log("Written by Unsigned_Arduino on the MakeCode forums. (forum.makecode
 game.onUpdate(function () {
     CursorSelectedCellImage.setPosition(Cursor.x, Cursor.y)
 })
+// Use control.heapSnapshot() if needed (prints to JS console in dev tools in browser)
 game.onUpdateInterval(500, function () {
     if (!(Editable)) {
         for (let Cell of grid.allSprites()) {
@@ -285,23 +430,13 @@ game.onUpdateInterval(500, function () {
             if (CellType == 0) {
                 console.log("Cell type is mover")
                 if (CellTypeVariation == 0) {
-                    CellsInPath = grid.getSprites(tiles.getTileLocation(grid.spriteCol(Cell), grid.spriteRow(Cell) - 1))
-                    if (CellsInPath.length == 0) {
-                        grid.move(Cell, 0, -1)
-                    } else {
-                        if (sprites.readDataNumber(CellsInPath[0], "CellType") == 5) {
-                        	
-                        } else if (sprites.readDataNumber(CellsInPath[0], "CellType") == 6) {
-                            CellsInPath[0].destroy(effects.spray, 100)
-                            Cell.destroy()
-                        }
-                    }
+                    moveCell(Cell, 0, -1)
                 } else if (CellTypeVariation == 1) {
-                    grid.move(Cell, 1, 0)
+                    moveCell(Cell, 1, 0)
                 } else if (CellTypeVariation == 2) {
-                    grid.move(Cell, 0, 1)
+                    moveCell(Cell, 0, 1)
                 } else {
-                    grid.move(Cell, -1, 0)
+                    moveCell(Cell, -1, 0)
                 }
             } else if (CellType == 1) {
                 console.log("Cell type is pushable")
