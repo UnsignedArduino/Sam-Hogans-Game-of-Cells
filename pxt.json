@@ -1,0 +1,27 @@
+{
+    "name": "Sam Hogan's Game of Cells",
+    "description": "",
+    "dependencies": {
+        "device": "*",
+        "Sprite Grid": "github:darzu/arcade-grid#v1.2.1",
+        "arcade-sprite-data": "github:microsoft/arcade-sprite-data#v0.1.0"
+    },
+    "files": [
+        "main.blocks",
+        "main.ts",
+        "README.md",
+        "tilemap.g.jres",
+        "tilemap.g.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "targetVersions": {
+        "target": "1.0.16",
+        "targetId": "arcade"
+    },
+    "supportedTargets": [
+        "arcade"
+    ],
+    "preferredEditor": "blocksprj"
+}
