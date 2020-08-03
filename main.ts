@@ -48,7 +48,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 function moveCell (sprite: Sprite, col: number, row: number) {
-    CellsInPath = grid.getSprites(tiles.getTileLocation(grid.spriteCol(sprite) + col, grid.spriteRow(sprite) + row))
+    CellsInPath = grid.getSprites(grid.add(grid.getLocation(sprite), col, row))
     // Move cell if nothing in way, else run through each check than move if can
     if (CellsInPath.length == 0) {
         grid.move(sprite, col, row)
@@ -187,7 +187,6 @@ function moveCell (sprite: Sprite, col: number, row: number) {
         moveCell(CellsInPath[0], col, row)
         moveCell(sprite, col, row)
     }
-    return
 }
 sprites.onDestroyed(SpriteKind.Cell, function (sprite) {
     if (!(Editable)) {
@@ -197,16 +196,75 @@ sprites.onDestroyed(SpriteKind.Cell, function (sprite) {
 function cloneCell (sprite: Sprite, col: number, row: number) {
     ClonedCell = sprites.create(sprite.image, SpriteKind.Cell)
     sprites.setDataNumber(ClonedCell, "CellType", sprites.readDataNumber(sprite, "CellType"))
-    sprites.setDataNumber(ClonedCell, "CellTypeVariation", sprites.readDataNumber(sprite, "CellType"))
+    sprites.setDataNumber(ClonedCell, "CellTypeVariation", sprites.readDataNumber(sprite, "CellTypeVariation"))
     grid.place(ClonedCell, tiles.getTileLocation(col, row))
 }
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
-    Editable = false
-    Cursor.destroy()
-    CursorSelectedCellImage.destroy()
-    console.log("Editing is now disabled! The simulation will start shortly... ")
-    Paused = !(Paused)
+    if (Editable) {
+        game.showLongText("Please select what you want to do:\\n" + "0 - cancel\\n" + "1 - start simulation\\n" + "2 - save grid configuration to disk\\n" + "3 - load grid configuration from disk\\n" + "4 - clear all grid configurations on disk", DialogLayout.Full)
+        Action = game.askForNumber("Please select action (0 for cancel)", 1)
+        if (Action == 0) {
+        	
+        } else if (Action == 1) {
+            Editable = false
+            Cursor.destroy()
+            CursorSelectedCellImage.destroy()
+            console.log("Editing is now disabled! The simulation will start shortly... ")
+            Paused = !(Paused)
+        } else if (Action == 2) {
+            saveGridConfig("GridConfig")
+        } else if (Action == 3) {
+            loadGridConfig("GridConfig")
+        } else if (Action == 4) {
+            if (game.ask("Are you really sure you want", "to clear ALL grid configs?") && game.ask("Are you really sure you want", "to clear ALL grid configs?")) {
+                blockSettings.clear()
+                if (blockSettings.list().length == 0) {
+                    game.showLongText("Successfully cleared all grid configurations!", DialogLayout.Bottom)
+                } else {
+                    game.showLongText("Error clearing all grid configurations! :(", DialogLayout.Bottom)
+                }
+            }
+        } else {
+            game.showLongText("Sorry, that isn't a valid choice! Press [Menu] to try again!", DialogLayout.Bottom)
+        }
+    } else {
+        Paused = !(Paused)
+    }
 })
+function saveGridConfig (name: string) {
+    if (blockSettings.exists(name) && !(game.ask("You already have a grid", "saved! Overwrite?"))) {
+        return
+    }
+    GridConfig = ""
+    for (let Row = 0; Row <= grid.numRows() - 1; Row++) {
+        for (let Column = 0; Column <= grid.numColumns() - 1; Column++) {
+            if (grid.getSprites(tiles.getTileLocation(Column, Row)).length == 0) {
+                GridConfig = "" + GridConfig + "  "
+            } else {
+                CellAtTile = grid.getSprites(tiles.getTileLocation(Column, Row))[0]
+                GridConfig = "" + GridConfig + sprites.readDataNumber(CellAtTile, "CellType") + sprites.readDataNumber(CellAtTile, "CellTypeVariation")
+            }
+        }
+    }
+    blockSettings.writeString(name, GridConfig)
+    if (blockSettings.exists(name) && blockSettings.readString(name) == GridConfig) {
+        game.showLongText("Successfully saved grid config!", DialogLayout.Bottom)
+    } else {
+        game.showLongText("Error saving grid config! :(", DialogLayout.Bottom)
+    }
+}
+function loadGridConfig (name: string) {
+    if (!(game.ask("Are you sure you want to", "overwrite the grid?"))) {
+        return
+    }
+    GridConfig = blockSettings.readString(name)
+    Position = 0
+    for (let Row = 0; Row <= grid.numRows() - 1; Row++) {
+        for (let Column = 0; Column <= grid.numColumns() - 1; Column++) {
+        	
+        }
+    }
+}
 function rotateCell (sprite: Sprite, dir: boolean) {
     // if rotate (true)
     // 
@@ -236,6 +294,10 @@ function rotateCell (sprite: Sprite, dir: boolean) {
 let Location: Sprite[] = []
 let CellTypeVariation = 0
 let CellType = 0
+let Position = 0
+let CellAtTile: Sprite = null
+let GridConfig = ""
+let Action = 0
 let ClonedCell: Sprite = null
 let CellsInPath: Sprite[] = []
 let DirectionMoved = 0
@@ -455,6 +517,8 @@ Paused = true
 CursorSelectedCellImage.setImage(CellImages[SelectedCellImageType][SelectedCellImage])
 console.log("Welcome to Sam Hogan's Game of Cells (Unofficial) Sandbox console!")
 console.log("Written by Unsigned_Arduino on the MakeCode forums. (forum.makecode.com)")
+game.showLongText("Welcome to Sam Hogan's Game of Cells (Unofficial) Sandbox console!", DialogLayout.Bottom)
+game.showLongText("Written by \\nUnsigned_Arduino on the MakeCode forums. (forum.makecode.com)", DialogLayout.Bottom)
 game.onUpdate(function () {
     CursorSelectedCellImage.setPosition(Cursor.x, Cursor.y)
 })
@@ -545,7 +609,21 @@ game.onUpdateInterval(500, function () {
             // 
             // 
             // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
             // right
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
             // 
             // 
             // 
@@ -585,7 +663,23 @@ game.onUpdateInterval(500, function () {
             // 
             // 
             // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
             // left
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
+            // 
             // 
             // 
             // 

@@ -4,7 +4,8 @@
     "dependencies": {
         "device": "*",
         "Sprite Grid": "github:darzu/arcade-grid#v1.2.1",
-        "arcade-sprite-data": "github:microsoft/arcade-sprite-data#v0.1.0"
+        "arcade-sprite-data": "github:microsoft/arcade-sprite-data#v0.1.0",
+        "settings-blocks": "github:microsoft/pxt-settings-blocks#v1.0.0"
     },
     "files": [
         "main.blocks",
