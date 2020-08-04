@@ -199,6 +199,27 @@ function cloneCell (sprite: Sprite, col: number, row: number) {
     sprites.setDataNumber(ClonedCell, "CellTypeVariation", sprites.readDataNumber(sprite, "CellTypeVariation"))
     grid.place(ClonedCell, tiles.getTileLocation(col, row))
 }
+function makeCursor () {
+    Cursor = sprites.create(img`
+        a a a . . a a a 
+        a . . . . . . a 
+        a . . . . . . a 
+        . . . . . . . . 
+        . . . . . . . . 
+        a . . . . . . a 
+        a . . . . . . a 
+        a a a . . a a a 
+        `, SpriteKind.Player)
+    Cursor.setFlag(SpriteFlag.ShowPhysics, false)
+    Cursor.z = 10
+    sprites.setDataBoolean(Cursor, "Skip", true)
+    grid.snap(Cursor)
+    grid.moveWithButtons(Cursor)
+    CursorSelectedCellImage = sprites.create(CellImages[SelectedCellImageType][SelectedCellImage], SpriteKind.Player)
+    CursorSelectedCellImage.z = 9
+    sprites.setDataBoolean(CursorSelectedCellImage, "Skip", true)
+    grid.snap(CursorSelectedCellImage)
+}
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Editable) {
         game.showLongText("Please select what you want to do:\\n" + "0 - cancel\\n" + "1 - start simulation\\n" + "2 - save grid configuration to disk\\n" + "3 - load grid configuration from disk\\n" + "4 - clear all grid configurations on disk", DialogLayout.Full)
@@ -235,19 +256,17 @@ function saveGridConfig (name: string) {
     if (blockSettings.exists(name) && !(game.ask("You already have a grid", "saved! Overwrite?"))) {
         return
     }
-    GridConfig = ""
-    for (let Row = 0; Row <= grid.numRows() - 1; Row++) {
-        for (let Column = 0; Column <= grid.numColumns() - 1; Column++) {
-            if (grid.getSprites(tiles.getTileLocation(Column, Row)).length == 0) {
-                GridConfig = "" + GridConfig + "  "
-            } else {
-                CellAtTile = grid.getSprites(tiles.getTileLocation(Column, Row))[0]
-                GridConfig = "" + GridConfig + sprites.readDataNumber(CellAtTile, "CellType") + sprites.readDataNumber(CellAtTile, "CellTypeVariation")
-            }
+    GridConfig = []
+    for (let CellInTile of grid.allSprites()) {
+        if (!(sprites.readDataBoolean(CellInTile, "Skip"))) {
+            GridConfig.push(sprites.readDataNumber(CellInTile, "CellType"))
+            GridConfig.push(sprites.readDataNumber(CellInTile, "CellTypeVariation"))
+            GridConfig.push(grid.spriteRow(CellInTile))
+            GridConfig.push(grid.spriteCol(CellInTile))
         }
     }
-    blockSettings.writeString(name, GridConfig)
-    if (blockSettings.exists(name) && blockSettings.readString(name) == GridConfig) {
+    blockSettings.writeNumberArray(name, GridConfig)
+    if (blockSettings.exists(name) && blockSettings.readNumberArray(name) == GridConfig) {
         game.showLongText("Successfully saved grid config!", DialogLayout.Bottom)
     } else {
         game.showLongText("Error saving grid config! :(", DialogLayout.Bottom)
@@ -257,13 +276,25 @@ function loadGridConfig (name: string) {
     if (!(game.ask("Are you sure you want to", "overwrite the grid?"))) {
         return
     }
-    GridConfig = blockSettings.readString(name)
-    Position = 0
-    for (let Row = 0; Row <= grid.numRows() - 1; Row++) {
-        for (let Column = 0; Column <= grid.numColumns() - 1; Column++) {
-        	
-        }
+    if (!(blockSettings.exists(name))) {
+        game.showLongText("Could not find '" + name + "' on the disk!", DialogLayout.Bottom)
+        return
     }
+    for (let CellInTile of grid.allSprites()) {
+        CellInTile.destroy()
+    }
+    GridConfig = blockSettings.readNumberArray(name)
+    Position = 0
+    while (Position < GridConfig.length) {
+        Cell = sprites.create(CellImages[GridConfig[Position + 0]][GridConfig[Position + 1]], SpriteKind.Cell)
+        sprites.setDataNumber(Cell, "CellType", GridConfig[Position + 0])
+        sprites.setDataNumber(Cell, "CellTypeVariation", GridConfig[Position + 1])
+        grid.place(Cell, tiles.getTileLocation(GridConfig[Position + 3], GridConfig[Position + 2]))
+        Position += 4
+    }
+    makeCursor()
+    NumberOfCellsOnGrid = grid.allSprites().length
+    game.showLongText("Finished loading grid config!", DialogLayout.Bottom)
 }
 function rotateCell (sprite: Sprite, dir: boolean) {
     // if rotate (true)
@@ -295,21 +326,20 @@ let Location: Sprite[] = []
 let CellTypeVariation = 0
 let CellType = 0
 let Position = 0
-let CellAtTile: Sprite = null
-let GridConfig = ""
+let GridConfig: number[] = []
 let Action = 0
 let ClonedCell: Sprite = null
 let CellsInPath: Sprite[] = []
 let DirectionMoved = 0
+let Cursor: Sprite = null
 let Cell: Sprite = null
+let CursorSelectedCellImage: Sprite = null
 let Paused = false
 let Editable = false
 let NumberOfCellsOnGrid = 0
 let SelectedCellImageType = 0
 let SelectedCellImage = 0
 let CellImages: Image[][] = []
-let CursorSelectedCellImage: Sprite = null
-let Cursor: Sprite = null
 tiles.setTilemap(tiles.createTilemap(hex`14000f00010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101`, img`
     . . . . . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . . . . . 
@@ -327,32 +357,6 @@ tiles.setTilemap(tiles.createTilemap(hex`14000f000101010101010101010101010101010
     . . . . . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . . . . . 
     `, [myTiles.transparency16,myTiles.tile2], TileScale.Eight))
-Cursor = sprites.create(img`
-    a a a . . a a a 
-    a . . . . . . a 
-    a . . . . . . a 
-    . . . . . . . . 
-    . . . . . . . . 
-    a . . . . . . a 
-    a . . . . . . a 
-    a a a . . a a a 
-    `, SpriteKind.Player)
-Cursor.setFlag(SpriteFlag.ShowPhysics, false)
-Cursor.z = 10
-grid.snap(Cursor)
-grid.moveWithButtons(Cursor)
-CursorSelectedCellImage = sprites.create(img`
-    1 1 1 1 1 1 1 1 
-    1 1 1 1 1 1 1 1 
-    1 1 1 1 1 1 1 1 
-    1 1 1 1 1 1 1 1 
-    1 1 1 1 1 1 1 1 
-    1 1 1 1 1 1 1 1 
-    1 1 1 1 1 1 1 1 
-    1 1 1 1 1 1 1 1 
-    `, SpriteKind.Player)
-CursorSelectedCellImage.z = 9
-grid.snap(CursorSelectedCellImage)
 info.setScore(0)
 CellImages = [
 [img`
@@ -514,7 +518,7 @@ NumberOfCellsOnGrid = 0
 let Generation = 0
 Editable = true
 Paused = true
-CursorSelectedCellImage.setImage(CellImages[SelectedCellImageType][SelectedCellImage])
+makeCursor()
 console.log("Welcome to Sam Hogan's Game of Cells (Unofficial) Sandbox console!")
 console.log("Written by Unsigned_Arduino on the MakeCode forums. (forum.makecode.com)")
 game.showLongText("Welcome to Sam Hogan's Game of Cells (Unofficial) Sandbox console!", DialogLayout.Bottom)
