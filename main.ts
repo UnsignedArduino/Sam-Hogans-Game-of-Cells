@@ -47,11 +47,22 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         console.log("Editing is not enabled, probably because you started the simulation by pressing [Menu]! Restart to clear the board and enable editing.")
     }
 })
-function moveCell (sprite: Sprite, col: number, row: number) {
+function moveCell (sprite: Sprite, col: number, row: number): any {
     CellsInPath = grid.getSprites(grid.add(grid.getLocation(sprite), col, row))
     // Move cell if nothing in way, else run through each check than move if can
     if (CellsInPath.length == 0) {
-        grid.move(sprite, col, row)
+        if (grid.spriteRow(sprite) == 0) {
+            return false
+        } else if (grid.spriteRow(sprite) == grid.numRows() - 1) {
+            return false
+        } else if (grid.spriteCol(sprite) == 0) {
+            return false
+        } else if (grid.spriteCol(sprite) == grid.numColumns() - 1) {
+            return false
+        } else {
+            grid.move(sprite, col, row)
+            return true
+        }
     } else {
         // If type is slider
         // 
@@ -146,9 +157,9 @@ function moveCell (sprite: Sprite, col: number, row: number) {
                 // 
                 // else col must be 1
                 if (row < 0) {
-                    return
+                    return false
                 } else if (row > 0) {
-                    return
+                    return false
                 } else if (col < 0) {
                 	
                 } else {
@@ -172,20 +183,23 @@ function moveCell (sprite: Sprite, col: number, row: number) {
                 } else if (row > 0) {
                 	
                 } else if (col < 0) {
-                    return
+                    return false
                 } else {
-                    return
+                    return false
                 }
             }
         } else if (sprites.readDataNumber(CellsInPath[0], "CellType") == 5) {
-            return
+            return false
         } else if (sprites.readDataNumber(CellsInPath[0], "CellType") == 6 && !(sprites.readDataNumber(sprite, "CellType") == 6)) {
             CellsInPath[0].destroy(effects.spray, 100)
             sprite.destroy()
-            return
+            return false
         }
-        moveCell(CellsInPath[0], col, row)
-        moveCell(sprite, col, row)
+        if (moveCell(CellsInPath[0], col, row)) {
+            moveCell(sprite, col, row)
+        } else {
+            return false
+        }
     }
 }
 sprites.onDestroyed(SpriteKind.Cell, function (sprite) {
