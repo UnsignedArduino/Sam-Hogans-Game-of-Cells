@@ -49,15 +49,14 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 function moveCell (sprite: Sprite, col: number, row: number): any {
     CellsInPath = grid.getSprites(grid.add(grid.getLocation(sprite), col, row))
-    // Move cell if nothing in way, else run through each check than move if can
     if (CellsInPath.length == 0) {
-        if (grid.spriteRow(sprite) == 0) {
+        if (grid.spriteRow(sprite) == 0 && row < 0) {
             return false
-        } else if (grid.spriteRow(sprite) == grid.numRows() - 1) {
+        } else if (grid.spriteRow(sprite) == grid.numRows() - 1 && row > 0) {
             return false
-        } else if (grid.spriteCol(sprite) == 0) {
+        } else if (grid.spriteCol(sprite) == 0 && col < 0) {
             return false
-        } else if (grid.spriteCol(sprite) == grid.numColumns() - 1) {
+        } else if (grid.spriteCol(sprite) == grid.numColumns() - 1 && col > 0) {
             return false
         } else {
             grid.move(sprite, col, row)
@@ -144,18 +143,6 @@ function moveCell (sprite: Sprite, col: number, row: number): any {
             // 
             // else the slider must go up and down
             if (sprites.readDataNumber(CellsInPath[0], "CellTypeVariation") == 0) {
-                // If row == -1 (up)
-                // 
-                // 
-                // elif row == 1 (down)
-                // 
-                // 
-                // 
-                // elif col == -1 (left)
-                // 
-                // 
-                // 
-                // else col must be 1
                 if (row < 0) {
                     return false
                 } else if (row > 0) {
@@ -280,7 +267,7 @@ function saveGridConfig (name: string) {
         }
     }
     blockSettings.writeNumberArray(name, GridConfig)
-    if (blockSettings.exists(name) && blockSettings.readNumberArray(name) == GridConfig) {
+    if (blockSettings.exists(name)) {
         game.showLongText("Successfully saved grid config!", DialogLayout.Bottom)
     } else {
         game.showLongText("Error saving grid config! :(", DialogLayout.Bottom)
