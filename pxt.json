@@ -1,6 +1,6 @@
 {
-    "name": "Sam Hogan's Game of Cells v0.4.1 BETA",
-    "description": "",
+    "name": "Sam Hogan's Game of Cells v0.6 BETA",
+    "description": "Sam Hogan's Cell Machine, now on MakeCode Arcade!",
     "dependencies": {
         "device": "*",
         "Sprite Grid": "github:darzu/arcade-grid#v1.2.1",
@@ -24,5 +24,10 @@
     "supportedTargets": [
         "arcade"
     ],
-    "preferredEditor": "blocksprj"
+    "preferredEditor": "blocksprj",
+    "yotta": {
+        "config": {
+            "PXT_GC_CHECKS": 1
+        }
+    }
 }
