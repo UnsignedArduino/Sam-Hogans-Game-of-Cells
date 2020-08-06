@@ -1,5 +1,5 @@
 {
-    "name": "Sam Hogan's Game of Cells v0.6 BETA",
+    "name": "Sam Hogan's Game of Cells v0.7 BETA",
     "description": "Sam Hogan's Cell Machine, now on MakeCode Arcade!",
     "dependencies": {
         "device": "*",

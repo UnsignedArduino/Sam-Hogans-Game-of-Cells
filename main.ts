@@ -21,10 +21,10 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Editable) {
         if (!(SelectedCellImageType == 7)) {
-            Cell2 = sprites.create(CellImages[SelectedCellImageType][SelectedCellImage], SpriteKind.Cell)
-            Cell2.setPosition(Cursor.x, Cursor.y)
-            sprites.setDataNumber(Cell2, "CellType", SelectedCellImageType)
-            sprites.setDataNumber(Cell2, "CellTypeVariation", SelectedCellImage)
+            CellThing = sprites.create(CellImages[SelectedCellImageType][SelectedCellImage], SpriteKind.Cell)
+            CellThing.setPosition(Cursor.x, Cursor.y)
+            sprites.setDataNumber(CellThing, "CellType", SelectedCellImageType)
+            sprites.setDataNumber(CellThing, "CellTypeVariation", SelectedCellImage)
         }
         if (grid.spriteCol(Cursor) == 19) {
             DirectionMoved = -1
@@ -39,7 +39,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         grid.move(Cursor, DirectionMoved * -1, 0)
         grid.move(CursorSelectedCellImage, DirectionMoved * -1, 0)
         if (!(SelectedCellImageType == 7)) {
-            grid.snap(Cell2)
+            grid.snap(CellThing)
         }
         NumberOfCellsOnGrid = grid.allSprites().length
         console.log("User pressed [A], just made cell type: " + "foo" + " and there are: " + NumberOfCellsOnGrid + " cells in the sandbox!")
@@ -258,12 +258,12 @@ function saveGridConfig (name: string) {
         return
     }
     GridConfig = []
-    for (let CellInTile2 of grid.allSprites()) {
-        if (!(sprites.readDataBoolean(CellInTile2, "Skip"))) {
-            GridConfig.push(sprites.readDataNumber(CellInTile2, "CellType"))
-            GridConfig.push(sprites.readDataNumber(CellInTile2, "CellTypeVariation"))
-            GridConfig.push(grid.spriteRow(CellInTile2))
-            GridConfig.push(grid.spriteCol(CellInTile2))
+    for (let CellInTile of grid.allSprites()) {
+        if (!(sprites.readDataBoolean(CellInTile, "Skip"))) {
+            GridConfig.push(sprites.readDataNumber(CellInTile, "CellType"))
+            GridConfig.push(sprites.readDataNumber(CellInTile, "CellTypeVariation"))
+            GridConfig.push(grid.spriteRow(CellInTile))
+            GridConfig.push(grid.spriteCol(CellInTile))
         }
     }
     blockSettings.writeNumberArray(name, GridConfig)
@@ -274,23 +274,23 @@ function saveGridConfig (name: string) {
     }
 }
 function loadGridConfig (name: string) {
-    if (!(game.ask("Are you sure you want to", "overwrite the grid?"))) {
-        return
-    }
     if (!(blockSettings.exists(name))) {
         game.showLongText("Could not find '" + name + "' on the disk!", DialogLayout.Bottom)
         return
     }
-    for (let CellInTile3 of grid.allSprites()) {
-        CellInTile3.destroy()
+    if (!(game.ask("Are you sure you want to", "overwrite the grid?"))) {
+        return
+    }
+    for (let CellInTile of grid.allSprites()) {
+        CellInTile.destroy()
     }
     GridConfig = blockSettings.readNumberArray(name)
     Position = 0
     while (Position < GridConfig.length) {
-        Cell2 = sprites.create(CellImages[GridConfig[Position + 0]][GridConfig[Position + 1]], SpriteKind.Cell)
-        sprites.setDataNumber(Cell2, "CellType", GridConfig[Position + 0])
-        sprites.setDataNumber(Cell2, "CellTypeVariation", GridConfig[Position + 1])
-        grid.place(Cell2, tiles.getTileLocation(GridConfig[Position + 3], GridConfig[Position + 2]))
+        CellThing = sprites.create(CellImages[GridConfig[Position + 0]][GridConfig[Position + 1]], SpriteKind.Cell)
+        sprites.setDataNumber(CellThing, "CellType", GridConfig[Position + 0])
+        sprites.setDataNumber(CellThing, "CellTypeVariation", GridConfig[Position + 1])
+        grid.place(CellThing, tiles.getTileLocation(GridConfig[Position + 3], GridConfig[Position + 2]))
         Position += 4
     }
     makeCursor()
@@ -334,7 +334,7 @@ let ClonedCell: Sprite = null
 let CellsInPath: Sprite[] = []
 let DirectionMoved = 0
 let Cursor: Sprite = null
-let Cell2: Sprite = null
+let CellThing: Sprite = null
 let CursorSelectedCellImage: Sprite = null
 let Paused = false
 let Editable = false
@@ -522,7 +522,7 @@ Paused = true
 makeCursor()
 console.log("Welcome to Sam Hogan's Game of Cells (Unofficial) Sandbox console!")
 console.log("Written by Unsigned_Arduino on the MakeCode forums. (forum.makecode.com)")
-game.showLongText("Welcome to Sam Hogan's Game of Cells (Unofficial) Sandbox console!", DialogLayout.Bottom)
+game.showLongText("Welcome to Sam Hogan's Game of Cells (Unofficial) Sandbox!", DialogLayout.Bottom)
 game.showLongText("Written by \\nUnsigned_Arduino on the MakeCode forums. (forum.makecode.com)", DialogLayout.Bottom)
 game.onUpdate(function () {
     CursorSelectedCellImage.setPosition(Cursor.x, Cursor.y)
@@ -531,9 +531,9 @@ game.onUpdate(function () {
 game.onUpdateInterval(500, function () {
     control.heapSnapshot()
 if (!(Editable) && !(Paused)) {
-        for (let Cell3 of grid.allSprites()) {
-            CellType = sprites.readDataNumber(Cell3, "CellType")
-            CellTypeVariation = sprites.readDataNumber(Cell3, "CellTypeVariation")
+        for (let CellThing of grid.allSprites()) {
+            CellType = sprites.readDataNumber(CellThing, "CellType")
+            CellTypeVariation = sprites.readDataNumber(CellThing, "CellTypeVariation")
             // mover
             // up
             // 
@@ -710,74 +710,74 @@ if (!(Editable) && !(Paused)) {
             // enemy
             if (CellType == 0) {
                 if (CellTypeVariation == 0) {
-                    moveCell(Cell3, 0, -1)
+                    moveCell(CellThing, 0, -1)
                 } else if (CellTypeVariation == 1) {
-                    moveCell(Cell3, 1, 0)
+                    moveCell(CellThing, 1, 0)
                 } else if (CellTypeVariation == 2) {
-                    moveCell(Cell3, 0, 1)
+                    moveCell(CellThing, 0, 1)
                 } else {
-                    moveCell(Cell3, -1, 0)
+                    moveCell(CellThing, -1, 0)
                 }
             } else if (CellType == 1) {
             	
             } else if (CellType == 2) {
             	
             } else if (CellType == 3) {
-                for (let CellInTile4 of grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Top, 1)) {
-                    rotateCell(CellInTile4, CellTypeVariation == 0)
+                for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Top, 1)) {
+                    rotateCell(CellInTile, CellTypeVariation == 0)
                 }
-                for (let CellInTile5 of grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Right, 1)) {
-                    rotateCell(CellInTile5, CellTypeVariation == 0)
+                for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Right, 1)) {
+                    rotateCell(CellInTile, CellTypeVariation == 0)
                 }
-                for (let CellInTile6 of grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Bottom, 1)) {
-                    rotateCell(CellInTile6, CellTypeVariation == 0)
+                for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Bottom, 1)) {
+                    rotateCell(CellInTile, CellTypeVariation == 0)
                 }
-                for (let CellInTile7 of grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Left, 1)) {
-                    rotateCell(CellInTile7, CellTypeVariation == 0)
+                for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Left, 1)) {
+                    rotateCell(CellInTile, CellTypeVariation == 0)
                 }
             } else if (CellType == 4) {
                 if (CellTypeVariation == 0) {
-                    for (let CellInTile8 of grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Bottom, 1)) {
-                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Top, 1)
+                    for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Bottom, 1)) {
+                        Location = grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Top, 1)
                         if (Location.length > 0) {
                             moveCell(Location[0], 0, -1)
                         }
-                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Top, 1)
+                        Location = grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Top, 1)
                         if (Location.length == 0) {
-                            cloneCell(CellInTile8, grid.spriteCol(Cell3), grid.spriteRow(Cell3) - 1)
+                            cloneCell(CellInTile, grid.spriteCol(CellThing), grid.spriteRow(CellThing) - 1)
                         }
                     }
                 } else if (CellTypeVariation == 1) {
-                    for (let CellInTile9 of grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Left, 1)) {
-                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Right, 1)
+                    for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Left, 1)) {
+                        Location = grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Right, 1)
                         if (Location.length > 0) {
                             moveCell(Location[0], 1, 0)
                         }
-                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Right, 1)
+                        Location = grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Right, 1)
                         if (Location.length == 0) {
-                            cloneCell(CellInTile9, grid.spriteCol(Cell3) + 1, grid.spriteRow(Cell3))
+                            cloneCell(CellInTile, grid.spriteCol(CellThing) + 1, grid.spriteRow(CellThing))
                         }
                     }
                 } else if (CellTypeVariation == 2) {
-                    for (let CellInTile10 of grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Top, 1)) {
-                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Bottom, 1)
+                    for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Top, 1)) {
+                        Location = grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Bottom, 1)
                         if (Location.length > 0) {
                             moveCell(Location[0], 0, 1)
                         }
-                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Bottom, 1)
+                        Location = grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Bottom, 1)
                         if (Location.length == 0) {
-                            cloneCell(CellInTile10, grid.spriteCol(Cell3), grid.spriteRow(Cell3) + 1)
+                            cloneCell(CellInTile, grid.spriteCol(CellThing), grid.spriteRow(CellThing) + 1)
                         }
                     }
                 } else {
-                    for (let CellInTile11 of grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Right, 1)) {
-                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Left, 1)
+                    for (let CellInTile of grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Right, 1)) {
+                        Location = grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Left, 1)
                         if (Location.length > 0) {
                             moveCell(Location[0], -1, 0)
                         }
-                        Location = grid.lineAdjacentSprites(grid.getLocation(Cell3), CollisionDirection.Left, 1)
+                        Location = grid.lineAdjacentSprites(grid.getLocation(CellThing), CollisionDirection.Left, 1)
                         if (Location.length == 0) {
-                            cloneCell(CellInTile11, grid.spriteCol(Cell3) - 1, grid.spriteRow(Cell3))
+                            cloneCell(CellInTile, grid.spriteCol(CellThing) - 1, grid.spriteRow(CellThing))
                         }
                     }
                 }
