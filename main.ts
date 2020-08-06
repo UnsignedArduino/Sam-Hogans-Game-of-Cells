@@ -223,7 +223,7 @@ function makeCursor () {
 }
 controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
     if (Editable) {
-        game.showLongText("Please select what you want to do:\\n" + "0 - cancel\\n" + "1 - start simulation\\n" + "2 - save grid configuration to disk\\n" + "3 - load grid configuration from disk\\n" + "4 - clear all grid configurations on disk", DialogLayout.Full)
+        game.showLongText("Please select what you want to do:\\n" + "0 - cancel\\n" + "1 - start simulation\\n" + "2 - save grid to disk\\n" + "3 - load grid from disk\\n" + "4 - remove grid from disk\\n" + "5 - about", DialogLayout.Full)
         Action = game.askForNumber("Please select action (0 for cancel)", 1)
         if (Action == 0) {
         	
@@ -238,7 +238,7 @@ controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
         } else if (Action == 3) {
             loadGridConfig("GridConfig")
         } else if (Action == 4) {
-            if (game.ask("Are you really sure you want", "to clear ALL grid configs?") && game.ask("Are you really sure you want", "to clear ALL grid configs?")) {
+            if (game.ask("Are you really sure you want", "to clear ALL grid configs?") && game.ask("Are you REALLY sure you want", "to clear ALL grid configs?")) {
                 blockSettings.clear()
                 if (blockSettings.list().length == 0) {
                     game.showLongText("Successfully cleared all grid configurations!", DialogLayout.Bottom)
@@ -246,6 +246,8 @@ controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
                     game.showLongText("Error clearing all grid configurations! :(", DialogLayout.Bottom)
                 }
             }
+        } else if (Action == 5) {
+            game.showLongText("This is Sam Hogan's Cell Machine, now on MakeCode Arcade!\\n" + "Coded by Unsigned_Arduino on the MakeCode forums. (forum.makecode.com)\\n" + "This project was based of Sam Hogan's Cell Machine, which you can find on YouTube at\\nhttps://youtu.be/N-BbgqOjIqk.\\nWithout his video, I would have never done this project.\\n" + "Many thanks to the MakeCode developers. Without their hard work, this project would not exist.\\n" + "And I would also like to thank you too, for playing my sandbox!\\n" + "Find the code of this game on my Github repository at\\nhttps://github.com/Unsig\\nnedArduino/Sam-Hogans-Gam\\ne-of-Cells\\n" + "If you want to suggest a feature (or more likely report a bug), go to\\nhttps://github.com/Unsig\\nnedArduino/Sam-Hogans-Game-of-Cells/issues\\n", DialogLayout.Full)
         } else {
             game.showLongText("Sorry, that isn't a valid choice! Press [Menu] to try again!", DialogLayout.Bottom)
         }
